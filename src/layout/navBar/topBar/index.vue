@@ -1,5 +1,5 @@
 <template>
-  <el-container >
+  <el-container class="layout-topbar">
     <el-header class="layout-navbars-header">基础云平台</el-header>
     <el-header class="layout-navbars-top">
       <el-space spacer="|" size="large">
@@ -18,6 +18,11 @@ const allMenu = defineAsyncComponent(() => import('/@/layout/navBar/topMenu/inde
 const TopMenu = defineAsyncComponent(() => import('/@/layout/navMenu/topMenu/index.vue'))
 </script>
 <style>
+.layout-topbar {
+
+  z-index: 1000; /* Ensure it stays on top of other elements */
+}
+
 .layout-navbars-header {
   height: 50px;
   display: flex;

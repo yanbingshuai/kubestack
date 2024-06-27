@@ -2,107 +2,120 @@
 
   <LayoutTopBar />
 
-  <div class="grid-layout" >
-    <div class="grid-layout-style">
-      <el-dropdown class="grid-layout-dropdown" trigger="click">
-        <span class="el-dropdown-link">当前区域<el-icon class="el-icon--right"><arrow-down /></el-icon></span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item >当前区域</el-dropdown-item>
-            <el-dropdown-item >所有区域</el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
+  <div :class="containerClass">
 
-      <el-button class="grid-layout-button" link>
-        <DynamicIcon  icon="EditPen" style="width: 15px"/>
-        自定义
-      </el-button>
-    </div>
+    <gridTop v-if="isCustomMode" @cancel="exitCustomMode" @save="saveLayout" />
+    <gridSide v-if="isCustomMode" />
 
-    <div class="layout-box">
-      <grid-layout
-          v-model:data="layout.data"
-          :isDrawGridLines="false"
-          :isCollision="false"
-          :remove="false"
-          :resize="false"
-          :gutter="20"
-          @draggableStart="draggableStart"
-          @draggableHandle="draggableHandle"
-          @draggableEnd="draggableEnd"
-          @remove="remove"
-      >
-        <grid-item v-for="item in layout.data" :key="item.id" :id="item.id">
-          <div v-if="item.id == 'main-info'" style="width: 100%; height: 100%;background-color: #ffffff">
-            <div class="maininfo-container" >
+
+    <div :class="gridContainerClass">
+      <div class="grid-layout" >
+        <div class="grid-layout-style">
+          <el-dropdown v-if="!isCustomMode" class="grid-layout-dropdown" trigger="click">
+            <span class="el-dropdown-link">当前区域<el-icon class="el-icon--right"><arrow-down /></el-icon></span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item >当前区域</el-dropdown-item>
+                <el-dropdown-item >所有区域</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+
+          <el-button v-if="!isCustomMode" class="grid-layout-button" @click="enterCustomMode" link>
+            <DynamicIcon  icon="EditPen" style="width: 15px"/>
+            自定义
+          </el-button>
+        </div>
+
+        <el-alert v-if="isCustomMode" title="您可按需添加、移除模块，以及拖动卡片进行自定义布局。" type="warning" show-icon/>
+
+        <div class="layout-box">
+
+
+
+          <grid-layout
+              v-model:data="layout.data"
+              :isDrawGridLines="false"
+              :isCollision="false"
+              :remove="false"
+              :resize="false"
+              :gutter="20"
+          >
+            <grid-item v-for="item in layout.data" :key="item.id" :id="item.id">
+              <div v-if="item.id == 'main-info'" style="width: 100%; height: 100%;background-color: #ffffff">
+                <div class="maininfo-container" >
               <span style="margin-left: 20px; margin-top: 20px; margin-bottom:20px ;font-family:SimHei; font-size: 25px; font-weight: bold ">
                 欢迎，{{ user }}
               </span>
-              <span class="time-container">
+                  <span class="time-container">
                 {{ item.message }}
               </span>
-              <div class="time-container time">
-                {{ currentDateTime }}
+                  <div class="time-container time">
+                    {{ currentDateTime }}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div v-else style="width: 100%; height: 100%; background-color: #ffffff">
-            <div style="padding: 20px; font-size: 14px; font-weight: bolder"> {{ item.id }} </div>
-            <div style="display: flex" v-if="item.type == 'symmetry' ">
-              <div class="loader">
-                <div class="dashboard-icon">
-                  <p class="layout-name">{{ item.count }}</p>
-                  <p class="layout-info">总数量</p>
-                </div>
-                <div class="albumcover">
-                  <DynamicIcon  :icon="item.icon" style="width: 30px"/>
-                </div>
+              <div v-else style="width: 100%; height: 100%; background-color: #ffffff">
+                <div style="padding: 20px; font-size: 14px; font-weight: bolder"> {{ item.id }} </div>
+                <div style="display: flex" v-if="item.type == 'symmetry' ">
+                  <div class="loader">
+                    <div class="dashboard-icon">
+                      <p class="layout-name">{{ item.count }}</p>
+                      <p class="layout-info">总数量</p>
+                    </div>
+                    <div class="albumcover">
+                      <DynamicIcon  :icon="item.icon" style="width: 30px"/>
+                    </div>
 
-              </div>
-              <div style="flex: 0.5">
-                <div >
-                  <div style="display: flex; margin-top: 5px; border-bottom: 1px solid #dbdde0; width: 90%; padding: 5px">
-                    <div class="icon-point-green"></div>
-                    <span>已运行</span>
                   </div>
-                  <div style="display: flex; margin-top: 10px; border-bottom: 1px solid #dbdde0; width: 90%; padding: 5px">
-                    <div class="icon-point-red"></div>
-                    <span >未运行</span>
+                  <div style="flex: 0.5">
+                    <div >
+                      <div style="display: flex; margin-top: 5px; border-bottom: 1px solid #dbdde0; width: 90%; padding: 5px">
+                        <div class="icon-point-green"></div>
+                        <span>已运行</span>
+                      </div>
+                      <div style="display: flex; margin-top: 10px; border-bottom: 1px solid #dbdde0; width: 90%; padding: 5px">
+                        <div class="icon-point-red"></div>
+                        <span >未运行</span>
+                      </div>
+                      <div style="display: flex; margin-top: 10px; padding: 5px">
+                        <div class="icon-point-other"></div>
+                        <span>其他</span>
+                      </div>
+                    </div>
                   </div>
-                  <div style="display: flex; margin-top: 10px; padding: 5px">
-                    <div class="icon-point-other"></div>
-                    <span>其他</span>
-                  </div>
+
+                </div>
+                <div v-else-if="item.type == 'echart'">
+                  <el-progress class="dashboard-paogress" type="dashboard" :percentage="item.percent" width="60">
+                    <template #default="{ percentage }">
+                      <span class="percentage-value">{{ percentage }}%</span>
+                    </template>
+                  </el-progress>
+                  <div class="echart-text" >已用</div>
+                  <div class="echart-text" >总量</div>
                 </div>
               </div>
-
-            </div>
-            <div v-else-if="item.type == 'echart'">
-              <el-progress class="dashboard-paogress" type="dashboard" :percentage="item.percent" width="60">
-                <template #default="{ percentage }">
-                  <span class="percentage-value">{{ percentage }}%</span>
-                </template>
-              </el-progress>
-              <div class="echart-text" >已用</div>
-              <div class="echart-text" >总量</div>
-            </div>
-          </div>
-        </grid-item>
-      </grid-layout>
+            </grid-item>
+          </grid-layout>
+        </div>
+      </div>
     </div>
   </div>
 
 </template>
 
 <script setup lang="ts">
-import {defineAsyncComponent, ref, onMounted} from 'vue'
+import {defineAsyncComponent, ref, onMounted, computed} from 'vue'
 import { GridLayout, GridItem } from 'vue3-draggable-grid'
 import 'vue3-draggable-grid/dist/style.css'
 import DynamicIcon from '/@/utils/icon.ts'
 
 const LayoutTopBar = defineAsyncComponent(() => import('/@/layout/navBar/topBar/index.vue'))
+const gridTop = defineAsyncComponent(()=>import('/@/views/dashboard/gridTop/index.vue'))
+const gridSide = defineAsyncComponent(()=>import('/@/views/dashboard/gridSide/index.vue'))
 
+const isCustomMode = ref(false);
 const user = ref('admin')
 
 const layout = ref(
@@ -142,12 +155,74 @@ onMounted(() => {
   updateDateTime();
 });
 
+const enterCustomMode = () => {
+  isCustomMode.value = true;
+  window.dispatchEvent(new Event('toggle-custom-mode'));
+};
+
+const exitCustomMode = () => {
+  isCustomMode.value = false;
+  window.dispatchEvent(new Event('toggle-custom-mode'));
+};
+
+const saveLayout = () => {
+  // 保存布局逻辑
+  exitCustomMode();
+};
+
+// const removeItem = (index) => {
+//   gridItems.value.splice(index, 1);
+// };
+
+const containerClass = computed(() => {
+  return isCustomMode.value ? 'container custom-mode' : 'container';
+});
+
+const gridContainerClass = computed(() => {
+  return isCustomMode.value ? 'grid-container custom-mode' : 'grid-container';
+});
+
 </script>
 <style  scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: relative;
+}
+
+.grid-container {
+  display: grid;
+  gap: 10px;
+  flex: 1;
+
+}
+
+.grid-item {
+  padding: 20px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.custom-button {
+  margin-top: 10px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1001; /* 确保按钮在顶层 */
+}
+
+.custom-mode .grid-container {
+  margin-left: 200px; /* SideBar宽度 */
+  margin-top: 50px;  /* TopBar高度 */
+  height: calc(100vh - 50px);
+}
+
 .grid-layout{
   height: 100vh;
   overflow: scroll;
   background: #f5f7fa;
+
 
   .grid-layout-style {
     padding: 5px;
